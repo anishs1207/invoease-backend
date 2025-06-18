@@ -13,7 +13,7 @@ passport.use(
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
             callbackURL: process.env.GOOGLE_CALLBACK_URL,
         },
-        async (accessToken, refreshToken, profile, done) => {
+       async (accessToken, refreshToken, profile, done) => {
             try {
                 let user = await User.findOne({ googleId: profile.id });
 
@@ -22,11 +22,10 @@ passport.use(
                     user = await User.findOne({ email: profile.emails[0].value });
 
                     if (user) {
-                        console.log("🔗 Linking Google account to existing user...");
                         user.googleId = profile.id;
                         await user.save();
+
                     } else {
-                        console.log("🆕 Creating new user...");
                         user = await User.create({
                             googleId: profile.id,
                             fullName: profile.displayName,
@@ -39,7 +38,11 @@ passport.use(
                 }
 
                 const tokens = await generateAccessAndRefreshTokens(user._id);
-                return done(null, { user, tokens });
+                const userObj = user.toObject();
+                userObj.tokens = tokens;
+                
+                return done(null, userObj);
+                
             } catch (error) {
                 return done(error, null);
             }

@@ -4,11 +4,8 @@ import { User } from "../models/user.model.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 
 export const sendNotifications = asyncHandler(async (req, res) => {
-    console.log(req.body);
     const { emoji, alertText } = req.body;
     const sender = req.user;
-
-    console.log("text")
 
     if (sender.role !== "admin") {
         throw new ApiError(403, "Access Denied: Only admins can send notifications.");
@@ -25,7 +22,7 @@ export const sendNotifications = asyncHandler(async (req, res) => {
     res.status(201).json(new ApiResponse(201, newNotification, "Notification sent to all users successfully."));
 });
 
-export const getNotifications = asyncHandler(async (req, res) => {
+export const getNotifications = asyncHandler(async (req,res) => {
     const adminUser = await User.findOne({ role: "admin" }).select("notifications");
 
     if (!adminUser) {
@@ -36,7 +33,7 @@ export const getNotifications = asyncHandler(async (req, res) => {
 });
 
 export const deleteNotificationByText = asyncHandler(async (req, res) => {
-    const { alertText } = req.params; // Get alertText from request params
+    const { alertText } = req.params;
 
     console.log("Deleting notification with text:", alertText);
 
@@ -56,7 +53,7 @@ export const updateNotificationById = asyncHandler(async (req, res) => {
     const { alertText, emoji } = req.body;
 
     await User.updateMany(
-        { "notifications._id": notificationId }, // Find users with the notification
+        { "notifications._id": notificationId }, 
         {
             $set: {
                 "notifications.$.alertText": alertText,
