@@ -176,6 +176,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 });
 
 const getUserSession = asyncHandler(async (req, res) => {
+    console.log ("session fetching")
     if (!req.user) {
         throw new ApiError(401, "User not authenticated");
     }
