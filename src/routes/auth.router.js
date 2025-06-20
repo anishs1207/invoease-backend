@@ -17,14 +17,37 @@ router.get(
             return res.status(401).json({ success: false, message: "Google authentication failed" });
         }
 
+        const convertDurationToMs = (durationString) => {
+    const value = parseInt(durationString);
+    if (isNaN(value)) {
+        console.warn(`Invalid duration string for maxAge: ${durationString}. Defaulting to 0ms.`);
+        return 0; // Or throw a more specific error
+    }
+
+    if (durationString.endsWith('d')) {
+        return value * 24 * 60 * 60 * 1000; // days to milliseconds
+    }
+    if (durationString.endsWith('h')) {
+        return value * 60 * 60 * 1000; // hours to milliseconds
+    }
+    if (durationString.endsWith('m')) {
+        return value * 60 * 1000; // minutes to milliseconds
+    }
+    if (durationString.endsWith('s')) {
+        return value * 1000; // seconds to milliseconds
+    }
+    // If no unit, assume it's already in milliseconds or handle as an error
+    return value;
+};
+
         const { accessToken, refreshToken } = req.user.tokens;
 
         console.log(accessToken, refreshToken);
 
-         const accessTokenMaxAge = convertDurationToMs(process.env.ACCESS_TOKEN_EXPIRY);
+        const accessTokenMaxAge = convertDurationToMs(process.env.ACCESS_TOKEN_EXPIRY);
         const refreshTokenMaxAge = convertDurationToMs(process.env.REFRESH_TOKEN_EXPIRY);
 
-        const acessTokensOptions = {
+        const accessTokensOptions = {
             httpOnly: true,
             secure: true,
             sameSite: 'None',
@@ -41,7 +64,7 @@ router.get(
         console.log("access", accessToken);
         console.log("refresh", refreshToken)
 
-        res.cookie("accessToken", accessToken, acessTokensOptions);
+        res.cookie("accessToken", accessToken, accessTokensOptions);
         res.cookie("refreshToken", refreshToken, refreshTokenOptions);
         console.log ("cookied are set")
 
