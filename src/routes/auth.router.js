@@ -21,13 +21,28 @@ router.get(
 
         console.log(accessToken, refreshToken);
 
-        const options = { httpOnly: true, secure: false };
+         const accessTokenMaxAge = convertDurationToMs(process.env.ACCESS_TOKEN_EXPIRY);
+        const refreshTokenMaxAge = convertDurationToMs(process.env.REFRESH_TOKEN_EXPIRY);
+
+        const acessTokensOptions = {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'None',
+            maxAge: accessTokenMaxAge,
+        }
+
+        const refreshTokenOptions = {
+             httpOnly: true,
+             secure: true, 
+             sameSite: 'None',
+             maxAge:  refreshTokenMaxAge,
+        }
 
         console.log("access", accessToken);
         console.log("refresh", refreshToken)
 
-        res.cookie("accessToken", accessToken, options);
-        res.cookie("refreshToken", refreshToken, options);
+        res.cookie("accessToken", accessToken, acessTokensOptions);
+        res.cookie("refreshToken", refreshToken, refreshTokenOptions);
         console.log ("cookied are set")
 
         res.redirect(`${process.env.FRONTEND_URL}/invoice`)
