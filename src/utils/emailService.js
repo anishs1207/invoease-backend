@@ -28,6 +28,3 @@ export async function sendVerificationEmail(email, verificationCode) {
         console.error("❌ Error sending email:", error);
     }
 }
-
-console.log("Sending mail...");
-console.log("Mail Sent.");

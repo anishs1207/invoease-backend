@@ -23,8 +23,13 @@ router.get(
 
         const options = { httpOnly: true, secure: false };
 
+        console.log("access", accessToken);
+        console.log("refresh", refreshToken)
+
         res.cookie("accessToken", accessToken, options);
         res.cookie("refreshToken", refreshToken, options);
+        console.log ("cookied are set")
+
         res.redirect(`${process.env.FRONTEND_URL}/invoice`)
     }
 );

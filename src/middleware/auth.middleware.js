@@ -5,16 +5,17 @@ import { User } from "../models/user.model.js";
 
 export const verifyJWT = asyncHandler(async (req, res, next) => {
     try {
+        // console.log ("verify JWT")
+        // console.log("Request Cookies", res.cookies);
         let token = req.cookies?.accessToken || req.header("Authorization")?.replace("Bearer ", "").trim();
 
-        console.log("Extracted Token:", token);
+        // console.log (token);
 
         if (!token) {
             throw new ApiError(401, "Unauthorized Request - No Token Provided");
         }
 
         const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-        console.log("Decoded Token:", decodedToken);
 
         const user = await User.findById(decodedToken?._id).select("-password -refreshToken");
 
@@ -25,7 +26,6 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
         if (!user.isVerified) {
             throw new ApiError(403, "Access Denied, User is Not Verified");
         }
-
        
         req.user = user;
         next();
@@ -36,8 +36,8 @@ export const verifyJWT = asyncHandler(async (req, res, next) => {
         if (error instanceof jwt.JsonWebTokenError) {
             throw new ApiError(401, "Invalid Access Token");
         }
-        console.log("Auth Middleware", error)
-        console.error("JWT Verification Error:", error.message);
+        // console.log("Auth Middleware", error)
+        // console.error("JWT Verification Error:", error.message);
         throw new ApiError(401, error.message || "Unauthorized Request");
     }
 });

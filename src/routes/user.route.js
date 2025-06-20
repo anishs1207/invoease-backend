@@ -14,7 +14,6 @@ import {
 } from "../controllers/user.controller.js";
 import { verifyJWT } from "../middleware/auth.middleware.js";
 
-
 const router = Router();
 
 router.post('/register', registerUser);
